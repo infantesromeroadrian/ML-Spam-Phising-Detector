@@ -36,8 +36,16 @@ ENV/
 notebooks/
 *.ipynb
 
-# Models (NO commitear - son grandes)
-models/*.joblib
+# Models (tracked with Git LFS)
+# Old timestamped models (gitignored)
+models/*_2026*.joblib
+
+# Version directories and latest symlinks ARE tracked
+!models/v*/
+!models/v*/*.joblib
+!models/*_latest.joblib
+
+# Other model formats (not used)
 models/*.pkl
 models/*.h5
 models/*.pt
@@ -99,3 +107,11 @@ requirements.txt
 
 # Assets (if any large files)
 assets/
+
+# MLflow
+mlruns/
+mlflow.db
+.mlflow/
+
+# MLflow artifacts tracked separately
+!mlruns/.gitkeep
