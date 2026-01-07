@@ -405,7 +405,33 @@ async function checkAPIHealth() {
     }
 }
 
-// Initialize
-console.log('🛡️  SOC Dashboard Ready');
-console.log('API URL:', API_BASE_URL);
-checkAPIHealth();
+// Toggle System Info Section
+function toggleSystemInfo() {
+    const content = document.getElementById('systemInfoContent');
+    const icon = document.getElementById('toggleIcon');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.style.transform = 'rotate(0deg)';
+        icon.textContent = '▼';
+    } else {
+        content.style.display = 'none';
+        icon.style.transform = 'rotate(-90deg)';
+        icon.textContent = '▶';
+    }
+}
+
+// Initialize - Start with system info collapsed
+document.addEventListener('DOMContentLoaded', () => {
+    const content = document.getElementById('systemInfoContent');
+    const icon = document.getElementById('toggleIcon');
+    
+    // Start collapsed for cleaner UI
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(-90deg)';
+    icon.textContent = '▶';
+    
+    console.log('🛡️  SOC Dashboard Ready');
+    console.log('API URL:', API_BASE_URL);
+    checkAPIHealth();
+});

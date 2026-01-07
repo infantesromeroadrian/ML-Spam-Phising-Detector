@@ -23,6 +23,114 @@
             <p class="soc-subtitle">Security Operations Center • ML-Powered Threat Detection v2.1</p>
         </header>
 
+        <!-- How It Works Section -->
+        <section class="bg-card" style="border-radius: var(--radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl); border: 1px solid var(--border-subtle);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-lg); cursor: pointer;" onclick="toggleSystemInfo()">
+                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <span style="font-size: 2rem;">🧠</span>
+                    <h2 style="color: var(--neon-cyan); font-size: 1.25rem; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                        HOW THE SYSTEM WORKS
+                    </h2>
+                </div>
+                <span id="toggleIcon" style="color: var(--neon-cyan); font-size: 1.5rem; transition: transform 0.3s;">▼</span>
+            </div>
+            
+            <div id="systemInfoContent" style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7;">
+                <p style="margin-bottom: var(--spacing-md);">
+                    This system uses <strong style="color: var(--neon-blue);">dual Machine Learning models</strong> to analyze emails and detect threats with high accuracy:
+                </p>
+                
+                <!-- Model Architecture -->
+                <div style="background: var(--dark-bg-input); border-left: 3px solid var(--neon-cyan); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-radius: var(--radius-md);">
+                    <h3 style="color: var(--neon-cyan); font-size: 1rem; margin-bottom: var(--spacing-md); text-transform: uppercase; letter-spacing: 1px;">
+                        📊 Model Architecture
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-md);">
+                        <!-- SPAM Detector -->
+                        <div style="background: var(--dark-bg-card); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                                <span style="font-size: 1.5rem;">🗑️</span>
+                                <strong style="color: var(--high);">SPAM Detector</strong>
+                            </div>
+                            <ul style="margin: 0; padding-left: var(--spacing-lg); color: var(--text-muted); font-size: 0.875rem;">
+                                <li>Algorithm: <span style="color: var(--text-primary);">Logistic Regression</span></li>
+                                <li>Features: <span style="color: var(--text-primary);">TF-IDF Vectorization</span></li>
+                                <li>Training: <span style="color: var(--text-primary);">5,000+ emails</span></li>
+                                <li>Accuracy: <span style="color: var(--neon-green);">~95%</span></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- PHISHING Detector -->
+                        <div style="background: var(--dark-bg-card); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                                <span style="font-size: 1.5rem;">🎣</span>
+                                <strong style="color: var(--critical);">PHISHING Detector</strong>
+                            </div>
+                            <ul style="margin: 0; padding-left: var(--spacing-lg); color: var(--text-muted); font-size: 0.875rem;">
+                                <li>Algorithm: <span style="color: var(--text-primary);">Logistic Regression</span></li>
+                                <li>Features: <span style="color: var(--text-primary);">TF-IDF + URL patterns</span></li>
+                                <li>Training: <span style="color: var(--text-primary);">3,500+ emails</span></li>
+                                <li>Accuracy: <span style="color: var(--neon-green);">~92%</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Classification Process -->
+                <div style="background: var(--dark-bg-input); border-left: 3px solid var(--neon-blue); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-radius: var(--radius-md);">
+                    <h3 style="color: var(--neon-blue); font-size: 1rem; margin-bottom: var(--spacing-md); text-transform: uppercase; letter-spacing: 1px;">
+                        ⚙️ Classification Process
+                    </h3>
+                    
+                    <ol style="margin: 0; padding-left: var(--spacing-lg); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.8;">
+                        <li><strong style="color: var(--text-primary);">Text Preprocessing:</strong> Email content is cleaned and tokenized</li>
+                        <li><strong style="color: var(--text-primary);">Feature Extraction:</strong> TF-IDF converts text into numerical features (bag of words)</li>
+                        <li><strong style="color: var(--text-primary);">Dual Classification:</strong> Both models analyze the email simultaneously</li>
+                        <li><strong style="color: var(--text-primary);">Probability Calculation:</strong> Each model outputs a confidence score (0-100%)</li>
+                        <li><strong style="color: var(--text-primary);">Risk Assessment:</strong> Final verdict combines both predictions</li>
+                    </ol>
+                </div>
+                
+                <!-- Risk Levels -->
+                <div style="background: var(--dark-bg-input); border-left: 3px solid var(--neon-yellow); padding: var(--spacing-lg); border-radius: var(--radius-md);">
+                    <h3 style="color: var(--neon-yellow); font-size: 1rem; margin-bottom: var(--spacing-md); text-transform: uppercase; letter-spacing: 1px;">
+                        🎯 Risk Levels Explained
+                    </h3>
+                    
+                    <div style="display: grid; gap: var(--spacing-sm); font-size: 0.875rem;">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <span style="color: var(--low);">✅ LOW:</span>
+                            <span style="color: var(--text-muted);">Legitimate email (HAM) with high confidence (>80%)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <span style="color: var(--medium);">⚠️ MEDIUM:</span>
+                            <span style="color: var(--text-muted);">Uncertain classification or low confidence score</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <span style="color: var(--high);">🔴 HIGH:</span>
+                            <span style="color: var(--text-muted);">Single threat detected (SPAM or PHISHING) with confidence >70%</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <span style="color: var(--critical);">🚨 CRITICAL:</span>
+                            <span style="color: var(--text-muted);">Both SPAM and PHISHING detected simultaneously</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Key Features -->
+                <div style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-subtle);">
+                    <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">
+                        <strong style="color: var(--neon-cyan);">🔬 Technical Details:</strong> 
+                        Built with <strong>scikit-learn</strong> (Logistic Regression) • 
+                        <strong>TF-IDF</strong> vectorization (up to 5000 features) • 
+                        <strong>Clean Architecture</strong> (Hexagonal pattern) • 
+                        <strong>FastAPI</strong> backend • Real-time classification
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <!-- Input Section -->
         <section id="inputSection">
             <div class="bg-card" style="border-radius: var(--radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
