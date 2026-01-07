@@ -70,12 +70,12 @@ warn_unused_configs = true
 disallow_untyped_defs = false  # Relajado para notebooks ML
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/spam_detector"]
+packages = ["spam_detector"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
-addopts = "-v --cov=src --cov-report=term-missing"
+pythonpath = ["."]
+addopts = "-v --cov=spam_detector --cov-report=term-missing"
 
 [dependency-groups]
 dev = [

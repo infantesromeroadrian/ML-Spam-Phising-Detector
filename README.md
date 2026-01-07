@@ -14,7 +14,7 @@
 spam-phishing-detector/
 ├── src/
 │   ├── backend/          # FastAPI + ML models (Python 3.12)
-│   │   ├── src/spam_detector/
+│   │   ├── spam_detector/  # Python package (flat layout)
 │   │   ├── tests/
 │   │   ├── models/       # Git LFS tracked
 │   │   └── README.md     # Backend docs

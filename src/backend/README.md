@@ -8,7 +8,7 @@ This backend follows **Hexagonal (Clean) Architecture**:
 
 ```
 backend/
-├── src/spam_detector/
+├── spam_detector/           # Python package (flat layout)
 │   ├── domain/              # Business logic (framework-agnostic)
 │   │   ├── entities/        # Data models (Email, Prediction, etc.)
 │   │   ├── ports/           # Interfaces (Protocol classes)
@@ -24,7 +24,8 @@ backend/
 │   └── utils/               # MLflow helpers
 ├── tests/                   # Pytest tests
 ├── models/                  # Trained models (Git LFS)
-└── pyproject.toml
+├── pyproject.toml
+└── README.md
 ```
 
 **Key principle**: Domain layer has ZERO dependencies on infrastructure (no FastAPI, no scikit-learn imports in domain/).
