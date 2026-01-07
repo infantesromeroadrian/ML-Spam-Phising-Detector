@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY src/ /app/src/
+COPY spam_detector/ /app/spam_detector/
 COPY models/ /app/models/
 
 # Ensure venv is in PATH
