@@ -89,6 +89,7 @@ dmypy.json
 historyMD/
 docs/
 README_DEV.md
+DEPLOYMENT_CHECKLIST.md
 
 # Requirements (using pyproject.toml + uv.lock)
 requirements.txt
