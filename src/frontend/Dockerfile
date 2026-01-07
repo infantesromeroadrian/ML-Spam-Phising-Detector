@@ -25,11 +25,11 @@ FROM nginx:alpine
 # Copy built files
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx config (TODO: create nginx.conf)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
-EXPOSE 80
+EXPOSE 5173
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

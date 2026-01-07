@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Plugin } from 'chart.js';
+import { useRef } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, type Plugin } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip);
