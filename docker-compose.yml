@@ -3,7 +3,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
+      context: ./src/backend
       dockerfile: Dockerfile
     container_name: spam-detector-api
     ports:
@@ -13,7 +13,7 @@ services:
       - API_PORT=8000
       - API_CORS_ORIGINS=http://localhost:5173,http://localhost:3000
     volumes:
-      - ./backend/models:/app/models
+      - ./src/backend/models:/app/models
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -23,7 +23,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./src/frontend
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=http://localhost:8000

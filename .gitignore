@@ -95,7 +95,6 @@ dmypy.json
 
 # Project-specific: Development docs (NO commit)
 historyMD/
-docs/
 README_DEV.md
 DEPLOYMENT_CHECKLIST.md
 
@@ -118,10 +117,10 @@ mlflow.db
 
 # Node.js / Frontend
 node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/.env
-frontend/.env.local
+src/frontend/dist/
+src/frontend/dist-ssr/
+src/frontend/.env
+src/frontend/.env.local
 *.local
 
 # Package locks (npm)
