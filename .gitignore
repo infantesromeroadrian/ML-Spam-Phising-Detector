@@ -115,3 +115,14 @@ mlflow.db
 
 # MLflow artifacts tracked separately
 !mlruns/.gitkeep
+
+# Node.js / Frontend
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.env.local
+*.local
+
+# Package locks (npm)
+package-lock.json
