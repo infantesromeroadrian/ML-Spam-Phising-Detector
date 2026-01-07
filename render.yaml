@@ -1,0 +1,43 @@
+services:
+  # Backend API Service
+  - type: web
+    name: spam-detector-api
+    env: docker
+    dockerfilePath: ./src/backend/Dockerfile
+    dockerContext: ./src/backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: 8000
+      - key: API_CORS_ORIGINS
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.12
+
+  # Frontend Static Site
+  - type: web
+    name: spam-detector-frontend
+    env: static
+    buildCommand: cd src/frontend && npm ci && npm run build
+    staticPublishPath: ./src/frontend/dist
+    plan: free
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false
