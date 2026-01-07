@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Threat Analyzer - SOC Dashboard</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/soc-dashboard.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="soc-dark">
+    <div class="soc-container">
+        <!-- Header -->
+        <header class="soc-header">
+            <div class="soc-header-title">
+                <span class="shield-icon">🛡️</span>
+                <span>EMAIL THREAT ANALYZER</span>
+            </div>
+            <p class="soc-subtitle">Security Operations Center • ML-Powered Threat Detection v2.1</p>
+        </header>
+
+        <!-- Input Section -->
+        <section id="inputSection">
+            <div class="bg-card" style="border-radius: var(--radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
+                <h2 style="color: var(--neon-cyan); font-size: 1.25rem; margin-bottom: var(--spacing-lg); text-transform: uppercase; letter-spacing: 1px;">
+                    ⚡ SCAN EMAIL FOR THREATS
+                </h2>
+                
+                <form id="classifyForm">
+                    <!-- Email Content -->
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <label for="emailText" style="display: block; margin-bottom: var(--spacing-sm); color: var(--text-secondary); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px;">
+                            Email Content *
+                        </label>
+                        <textarea 
+                            id="emailText" 
+                            name="emailText" 
+                            rows="8"
+                            placeholder="Paste suspicious email content here..."
+                            required
+                            style="width: 100%; padding: var(--spacing-md); background: var(--dark-bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; resize: vertical;"
+                        ></textarea>
+                        <div style="text-align: right; margin-top: var(--spacing-xs); font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+                            <span id="charCount">0</span> characters
+                        </div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <label for="subject" style="display: block; margin-bottom: var(--spacing-sm); color: var(--text-secondary); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px;">
+                            Subject (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="subject" 
+                            name="subject" 
+                            placeholder="e.g., Urgent Security Alert"
+                            style="width: 100%; padding: var(--spacing-md); background: var(--dark-bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem;"
+                        >
+                    </div>
+
+                    <!-- Sender -->
+                    <div style="margin-bottom: var(--spacing-xl);">
+                        <label for="sender" style="display: block; margin-bottom: var(--spacing-sm); color: var(--text-secondary); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px;">
+                            Sender (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="sender" 
+                            name="sender" 
+                            placeholder="e.g., admin@suspicious-domain.ru"
+                            style="width: 100%; padding: var(--spacing-md); background: var(--dark-bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem;"
+                        >
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-soc btn-report" id="submitBtn" style="width: 100%;">
+                        <span>🔍 INITIATE THREAT SCAN</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" style="display: none; text-align: center; padding: var(--spacing-2xl);">
+            <div style="display: inline-block; width: 60px; height: 60px; border: 4px solid var(--dark-bg-tertiary); border-top: 4px solid var(--neon-cyan); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: var(--spacing-lg); color: var(--neon-cyan); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 2px;">
+                SCANNING FOR THREATS...
+            </p>
+        </div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" style="display: none;">
+            <!-- Threat Level Banner -->
+            <div class="threat-banner" id="threatBanner">
+                <div class="threat-banner-header">
+                    <div class="threat-level">
+                        <span class="threat-level-icon" id="threatIcon">⚠️</span>
+                        <div class="threat-level-text">
+                            <h2 id="threatLevel">THREAT LEVEL: <span id="riskLevelText">UNKNOWN</span></h2>
+                            <p class="verdict" id="verdictText">ANALYSIS PENDING</p>
+                        </div>
+                    </div>
+                    <div class="threat-confidence">
+                        <div class="label">CONFIDENCE</div>
+                        <div class="value" id="confidenceValue">--.--%</div>
+                    </div>
+                </div>
+                
+                <!-- Risk Score Meter -->
+                <div class="risk-meter">
+                    <div class="risk-meter-label">
+                        <span>RISK SCORE</span>
+                        <span id="riskScoreText">0/100</span>
+                    </div>
+                    <div class="risk-meter-bar">
+                        <div class="risk-meter-fill" id="riskMeterFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detection Matrix -->
+            <div class="section-header">DETECTION MATRIX</div>
+            <div class="detection-matrix">
+                <!-- SPAM Card -->
+                <div class="detection-card" id="spamCard">
+                    <div class="detection-card-header">
+                        <span class="detection-card-icon">🗑️</span>
+                        <h3>SPAM</h3>
+                    </div>
+                    <div class="detection-percentage" id="spamPercentage">0%</div>
+                    <div class="detection-label" id="spamSeverity">UNKNOWN</div>
+                    <div class="detection-model" id="spamModel">Model: --</div>
+                </div>
+
+                <!-- PHISHING Card -->
+                <div class="detection-card" id="phishingCard">
+                    <div class="detection-card-header">
+                        <span class="detection-card-icon">🎣</span>
+                        <h3>PHISHING</h3>
+                    </div>
+                    <div class="detection-percentage" id="phishingPercentage">0%</div>
+                    <div class="detection-label" id="phishingSeverity">UNKNOWN</div>
+                    <div class="detection-model" id="phishingModel">Model: --</div>
+                </div>
+
+                <!-- MALWARE Card (Placeholder) -->
+                <div class="detection-card low">
+                    <div class="detection-card-header">
+                        <span class="detection-card-icon">🦠</span>
+                        <h3>MALWARE</h3>
+                    </div>
+                    <div class="detection-percentage" style="color: var(--low);">N/A</div>
+                    <div class="detection-label low">NOT SCANNED</div>
+                    <div class="detection-model">Model: v1.0.0 (placeholder)</div>
+                </div>
+            </div>
+
+            <!-- IOC Section -->
+            <div class="section-header">INDICATORS OF COMPROMISE (IOC)</div>
+            <div class="ioc-list" id="iocList">
+                <p style="text-align: center; color: var(--text-muted); padding: var(--spacing-lg);">
+                    No IOCs detected
+                </p>
+            </div>
+
+            <!-- Trigger Words (ML Explanation) -->
+            <div class="section-header">🧠 ML FEATURE ANALYSIS</div>
+            <div class="bg-card" style="border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-lg);">
+                    Words that triggered the ML classification (feature importance):
+                </p>
+                
+                <!-- SPAM Trigger Words -->
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <h4 style="color: var(--high); font-size: 0.875rem; margin-bottom: var(--spacing-sm); text-transform: uppercase; letter-spacing: 1px;">
+                        🗑️ SPAM Indicators:
+                    </h4>
+                    <div id="spamTriggerWords" style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">No words detected</span>
+                    </div>
+                </div>
+                
+                <!-- PHISHING Trigger Words -->
+                <div>
+                    <h4 style="color: var(--critical); font-size: 0.875rem; margin-bottom: var(--spacing-sm); text-transform: uppercase; letter-spacing: 1px;">
+                        🎣 PHISHING Indicators:
+                    </h4>
+                    <div id="phishingTriggerWords" style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">No words detected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threat Vectors -->
+            <div class="section-header">THREAT VECTORS</div>
+            <div class="threat-vectors-list" id="threatVectorsList">
+                <p style="text-align: center; color: var(--text-muted); padding: var(--spacing-lg);">
+                    No threat vectors identified
+                </p>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="section-header">RECOMMENDED ACTIONS</div>
+            <div class="recommendations-list" id="recommendationsList">
+                <p style="text-align: center; color: var(--text-muted); padding: var(--spacing-lg);">
+                    No recommendations available
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-soc btn-quarantine" onclick="alert('Quarantine feature (demo)')">
+                    🚫 QUARANTINE
+                </button>
+                <button class="btn-soc btn-report" onclick="alert('Report feature (demo)')">
+                    📊 DETAILED REPORT
+                </button>
+                <button class="btn-soc btn-scan-another" id="scanAnotherBtn">
+                    🔄 SCAN ANOTHER
+                </button>
+            </div>
+        </section>
+
+        <!-- Error Message -->
+        <div id="errorMessage" style="display: none; background: var(--dark-bg-card); border: 2px solid var(--critical); border-radius: var(--radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl); text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">⚠️</div>
+            <h3 style="color: var(--critical); margin-bottom: var(--spacing-md); text-transform: uppercase; letter-spacing: 1px;">
+                SYSTEM ERROR
+            </h3>
+            <p id="errorText" style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);"></p>
+            <button class="btn-soc btn-scan-another" id="dismissErrorBtn">DISMISS</button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="soc-footer">
+            <p>⚡ Analysis completed in <span class="execution-time" id="execTime">0.00</span>ms</p>
+            <p style="margin-top: var(--spacing-sm); color: var(--text-muted);">
+                Powered by ML • FastAPI + Scikit-learn • 
+                <a href="http://localhost:8000/docs" target="_blank" style="color: var(--neon-blue); text-decoration: none;">API Docs</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Keyframes for spinner -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="js/soc-app.js"></script>
+</body>
+</html>
