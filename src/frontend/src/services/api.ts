@@ -3,6 +3,10 @@ import type { ClassifyRequest, ClassifyResponse, ModelInfo } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// Log API URL on startup
+console.log('🔗 API Base URL:', API_BASE_URL);
+console.log('📦 Environment:', import.meta.env.MODE);
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -30,7 +34,28 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('❌ Response Error:', error.response?.status, error.message);
+    console.error('❌ Response Error:', {
+      status: error.response?.status,
+      message: error.message,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+      data: error.response?.data,
+    });
+    
+    // Create user-friendly error message
+    let userMessage = 'Network Error';
+    if (error.response) {
+      // Server responded with error
+      userMessage = `Server Error (${error.response.status}): ${error.response.data?.detail || error.response.statusText}`;
+    } else if (error.request) {
+      // Request made but no response
+      userMessage = `Cannot reach API at ${API_BASE_URL}. Please check your connection.`;
+    } else {
+      // Error in request setup
+      userMessage = error.message;
+    }
+    
+    error.message = userMessage;
     return Promise.reject(error);
   }
 );

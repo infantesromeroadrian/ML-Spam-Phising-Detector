@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Shield } from 'lucide-react';
+import { ApiStatus } from './ApiStatus';
 
 export const Header = () => {
   return (
@@ -28,14 +29,8 @@ export const Header = () => {
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-xs text-gray-500 uppercase tracking-wide">Status</div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-threat-low rounded-full animate-pulse"></div>
-              <span className="text-threat-low font-semibold">Online</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-6">
+          <ApiStatus />
           
           <div className="text-right">
             <div className="text-xs text-gray-500 uppercase tracking-wide">Version</div>
