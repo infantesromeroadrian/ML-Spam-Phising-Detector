@@ -94,7 +94,6 @@ coverage.xml
 dmypy.json
 
 # Project-specific: Development docs (NO commit)
-historyMD/
 README_DEV.md
 DEPLOYMENT_CHECKLIST.md
 
