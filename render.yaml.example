@@ -1,3 +1,7 @@
+# Render Blueprint Configuration
+# Use this file to create services automatically via Render Blueprint
+# Docs: https://render.com/docs/blueprint-spec
+
 services:
   # Backend API Service
   - type: web
@@ -5,6 +9,7 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile
     dockerContext: ./src/backend
+    region: oregon  # Change to your preferred region
     plan: free
     healthCheckPath: /health
     envVars:
@@ -15,7 +20,7 @@ services:
       - key: API_WORKERS
         value: 1
       - key: API_CORS_ORIGINS
-        value: https://spam-detector-frontend-x4jj.onrender.com
+        value: https://YOUR-FRONTEND-URL.onrender.com  # REPLACE WITH YOUR FRONTEND URL
 
   # Frontend Static Site
   - type: web
@@ -23,6 +28,7 @@ services:
     env: static
     buildCommand: cd src/frontend && npm ci && npm run build
     staticPublishPath: ./src/frontend/dist
+    region: oregon  # Change to your preferred region
     plan: free
     headers:
       - path: /*
@@ -40,4 +46,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://spam-detector-api.onrender.com
+        value: https://YOUR-BACKEND-URL.onrender.com  # REPLACE WITH YOUR BACKEND URL
