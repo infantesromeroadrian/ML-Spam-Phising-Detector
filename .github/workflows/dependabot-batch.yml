@@ -1,0 +1,70 @@
+name: Dependabot Batch Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - approve-all
+          - merge-patches
+          - close-majors
+        default: approve-all
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  manage-dependabot-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup GitHub CLI
+        run: |
+          gh auth setup-git
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: List Dependabot PRs
+        id: list-prs
+        run: |
+          echo "## Dependabot PRs" >> $GITHUB_STEP_SUMMARY
+          gh pr list --author "dependabot[bot]" --json number,title,state >> prs.json
+          cat prs.json | jq -r '.[] | "- #\(.number): \(.title)"' >> $GITHUB_STEP_SUMMARY
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Approve All PRs
+        if: github.event.inputs.action == 'approve-all'
+        run: |
+          for pr in $(gh pr list --author "dependabot[bot]" --json number -q '.[].number'); do
+            echo "Approving PR #$pr"
+            gh pr review $pr --approve || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Merge Patch Updates
+        if: github.event.inputs.action == 'merge-patches'
+        run: |
+          for pr in $(gh pr list --author "dependabot[bot]" --json number,title -q '.[] | select(.title | contains("patch") or contains("minor")) | .number'); do
+            echo "Merging PR #$pr"
+            gh pr merge $pr --auto --squash || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Close Major Updates
+        if: github.event.inputs.action == 'close-majors'  
+        run: |
+          for pr in $(gh pr list --author "dependabot[bot]" --json number,title -q '.[] | select(.title | contains("major")) | .number'); do
+            echo "Closing PR #$pr (major update)"
+            gh pr close $pr --comment "Closing major update - requires manual review" || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
