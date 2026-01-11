@@ -2,14 +2,15 @@
 
 import json
 
-from src.spam_detector.domain.entities import (
 import pytest
+
+from spam_detector.domain.entities import (
     ClassificationResult,
     Email,
     SinglePrediction,
 )
-from src.spam_detector.domain.ports import DetailLevel
-from src.spam_detector.infrastructure.adapters import (
+from spam_detector.domain.ports import DetailLevel
+from spam_detector.infrastructure.adapters import (
     JsonFormatter,
     TextFormatter,
 )
