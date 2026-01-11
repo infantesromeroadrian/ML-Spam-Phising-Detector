@@ -1,7 +1,6 @@
 """MLflow configuration for model tracking."""
 
 import mlflow
-from pathlib import Path
 
 # Set tracking URI (local)
 MLFLOW_TRACKING_URI = "file:./mlruns"
@@ -26,7 +25,7 @@ def setup_mlflow():
             },
         )
         print(f"✅ Created experiment: {DEFAULT_EXPERIMENT} (ID: {experiment_id})")
-    except Exception as e:
+    except Exception:
         experiment = mlflow.get_experiment_by_name(DEFAULT_EXPERIMENT)
         print(
             f"✅ Using existing experiment: {DEFAULT_EXPERIMENT} (ID: {experiment.experiment_id})"

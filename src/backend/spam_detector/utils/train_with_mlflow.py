@@ -7,14 +7,10 @@ Usage:
 """
 
 import argparse
+from datetime import datetime
+
 import mlflow
 import mlflow.sklearn
-import joblib
-from pathlib import Path
-from datetime import datetime
-from sklearn.linear_model import LogisticRegression
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from .mlflow_config import setup_mlflow
 

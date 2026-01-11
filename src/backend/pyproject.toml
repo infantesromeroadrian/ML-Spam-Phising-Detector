@@ -85,3 +85,5 @@ dev = [
 
 [tool.ruff.lint.per-file-ignores]
 "**/api/routers/*.py" = ["B008"]  # Allow function calls in argument defaults (FastAPI Depends)
+"**/infrastructure/cli/*.py" = ["B008"]  # Allow typer.Option in argument defaults
+"**/utils/*.py" = ["F401", "F841"]  # Allow unused imports and variables in utils (placeholders)
