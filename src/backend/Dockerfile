@@ -3,7 +3,7 @@
 # ============================================
 
 # -------------------- Builder Stage --------------------
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 # Install uv (modern Python package manager)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
@@ -18,7 +18,7 @@ COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev
 
 # -------------------- Production Stage --------------------
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
