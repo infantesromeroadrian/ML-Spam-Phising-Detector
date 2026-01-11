@@ -1,13 +1,300 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Threat Intelligence Platform | ML-Based Detection</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">🛡️</span>
+                <span class="brand-text">Email Threat Intelligence Platform</span>
+                <span class="brand-version">v1.0.0</span>
+            </div>
+            <div class="nav-status">
+                <div class="status-item">
+                    <span class="status-label">Backend Status:</span>
+                    <span class="status-indicator" id="backend-status">
+                        <span class="pulse-dot"></span>
+                        <span id="status-text">Checking...</span>
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Models Loaded:</span>
+                    <span class="models-status" id="models-status">—</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+        <div class="dashboard-grid">
+            
+            <!-- LEFT PANEL: Analysis Input -->
+            <aside class="panel panel-input">
+                <div class="panel-header">
+                    <h2>📧 Email Analysis</h2>
+                    <p class="panel-subtitle">Submit email content for ML-based threat detection</p>
+                </div>
+                <div class="panel-content">
+                    <form id="analysis-form">
+                        <!-- Email Metadata (Optional) -->
+                        <div class="input-group">
+                            <label class="input-label">
+                                <span class="label-icon">👤</span>
+                                Sender (Optional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="email-sender" 
+                                class="input-field"
+                                placeholder="suspicious@example.com"
+                            />
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                <span class="label-icon">📋</span>
+                                Subject (Optional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="email-subject" 
+                                class="input-field"
+                                placeholder="RE: Urgent Account Verification"
+                            />
+                        </div>
+
+                        <!-- Email Body (Required) -->
+                        <div class="input-group">
+                            <label class="input-label required">
+                                <span class="label-icon">📝</span>
+                                Email Body Content
+                            </label>
+                            <textarea 
+                                id="email-body" 
+                                class="input-textarea"
+                                rows="12"
+                                placeholder="Paste the complete email body here for analysis..."
+                                required
+                            ></textarea>
+                            <div class="input-meta">
+                                <span id="char-count">0 characters</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-group">
+                            <button type="submit" class="btn btn-analyze" id="analyze-btn">
+                                <span class="btn-icon">🔍</span>
+                                <span id="btn-text">Analyze Threat</span>
+                                <span id="btn-spinner" class="spinner hidden"></span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="clear-btn">
+                                <span class="btn-icon">🗑️</span>
+                                Clear
+                            </button>
+                        </div>
+
+                        <!-- Quick Samples -->
+                        <div class="samples-section">
+                            <label class="samples-label">Quick Test Samples:</label>
+                            <div class="samples-grid">
+                                <button type="button" class="sample-btn" data-type="spam">
+                                    <span class="sample-icon">🚫</span>
+                                    SPAM Sample
+                                </button>
+                                <button type="button" class="sample-btn" data-type="phishing">
+                                    <span class="sample-icon">🎣</span>
+                                    Phishing Sample
+                                </button>
+                                <button type="button" class="sample-btn" data-type="combined">
+                                    <span class="sample-icon">⚠️</span>
+                                    Combined Threat
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- RIGHT PANEL: Analysis Results -->
+            <main class="panel panel-results">
+                
+                <!-- Initial State -->
+                <div id="initial-state" class="empty-state">
+                    <div class="empty-icon">🔐</div>
+                    <h3>Ready for Threat Analysis</h3>
+                    <p>Submit an email to analyze potential SPAM and Phishing threats using dual ML models</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">ML Models</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">95%+</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">&lt;50ms</div>
+                            <div class="stat-label">Avg Response</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-state" class="error-container hidden">
+                    <div class="error-icon">❌</div>
+                    <div class="error-title">Analysis Failed</div>
+                    <div class="error-message" id="error-message"></div>
+                    <button class="btn btn-secondary" id="dismiss-error">Dismiss</button>
+                </div>
+
+                <!-- Results State -->
+                <div id="results-state" class="results-container hidden">
+                    
+                    <!-- Threat Overview -->
+                    <section class="results-section">
+                        <div class="section-header">
+                            <h3>🎯 Threat Assessment</h3>
+                            <div class="execution-time" id="execution-time"></div>
+                        </div>
+                        
+                        <div class="threat-overview">
+                            <div class="verdict-card" id="verdict-card">
+                                <div class="verdict-label">Final Verdict</div>
+                                <div class="verdict-value" id="verdict-value">—</div>
+                            </div>
+                            <div class="risk-card" id="risk-card">
+                                <div class="risk-label">Risk Level</div>
+                                <div class="risk-value" id="risk-value">—</div>
+                                <div class="risk-score-bar">
+                                    <div class="risk-score-fill" id="risk-score-fill"></div>
+                                </div>
+                                <div class="risk-score-text" id="risk-score-text">0/100</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dual Model Predictions -->
+                    <section class="results-section">
+                        <div class="section-header">
+                            <h3>🤖 ML Model Predictions</h3>
+                        </div>
+                        
+                        <div class="models-grid">
+                            <!-- SPAM Model -->
+                            <div class="model-card">
+                                <div class="model-header">
+                                    <div class="model-title">
+                                        <span class="model-icon">🚫</span>
+                                        SPAM Detector
+                                    </div>
+                                    <div class="model-version" id="spam-version">—</div>
+                                </div>
+                                <div class="model-prediction">
+                                    <div class="prediction-label" id="spam-label">—</div>
+                                    <div class="prediction-confidence">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill spam" id="spam-confidence-bar"></div>
+                                        </div>
+                                        <div class="confidence-value" id="spam-confidence">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phishing Model -->
+                            <div class="model-card">
+                                <div class="model-header">
+                                    <div class="model-title">
+                                        <span class="model-icon">🎣</span>
+                                        Phishing Detector
+                                    </div>
+                                    <div class="model-version" id="phishing-version">—</div>
+                                </div>
+                                <div class="model-prediction">
+                                    <div class="prediction-label" id="phishing-label">—</div>
+                                    <div class="prediction-confidence">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill phishing" id="phishing-confidence-bar"></div>
+                                        </div>
+                                        <div class="confidence-value" id="phishing-confidence">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Threat Intelligence Report -->
+                    <section class="results-section" id="threat-intel-section">
+                        <div class="section-header">
+                            <h3>🔍 Threat Intelligence Report</h3>
+                        </div>
+
+                        <!-- Threat Vectors -->
+                        <div class="intel-subsection">
+                            <h4 class="subsection-title">⚔️ Threat Vectors Detected</h4>
+                            <div id="threat-vectors-list" class="threat-vectors-list"></div>
+                        </div>
+
+                        <!-- IOCs (Indicators of Compromise) -->
+                        <div class="intel-subsection" id="iocs-subsection">
+                            <h4 class="subsection-title">⚠️ Indicators of Compromise (IOCs)</h4>
+                            <div id="iocs-list" class="iocs-list"></div>
+                        </div>
+
+                        <!-- ML Feature Analysis -->
+                        <div class="intel-subsection">
+                            <h4 class="subsection-title">🧠 ML Feature Analysis</h4>
+                            <div class="features-grid">
+                                <div class="features-column">
+                                    <div class="features-header">
+                                        <span class="features-icon">🚫</span>
+                                        SPAM Trigger Words
+                                    </div>
+                                    <div id="spam-features-list" class="features-list"></div>
+                                </div>
+                                <div class="features-column">
+                                    <div class="features-header">
+                                        <span class="features-icon">🎣</span>
+                                        Phishing Trigger Words
+                                    </div>
+                                    <div id="phishing-features-list" class="features-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recommendations -->
+                        <div class="intel-subsection" id="recommendations-subsection">
+                            <h4 class="subsection-title">💡 Security Recommendations</h4>
+                            <div id="recommendations-list" class="recommendations-list"></div>
+                        </div>
+                    </section>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span>Powered by FastAPI + scikit-learn</span>
+                <span class="separator">|</span>
+                <span>Dual ML Model Architecture</span>
+            </div>
+            <div class="footer-right">
+                <span id="model-info">Models: Loading...</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
 </html>
