@@ -34,7 +34,7 @@ jobs:
     outputs:
       backend-image: ${{ steps.meta-backend.outputs.tags }}
       frontend-image: ${{ steps.meta-frontend.outputs.tags }}
-      version: ${{ steps.meta-backend.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
     strategy:
       matrix:
         service: [backend, frontend]
@@ -48,10 +48,13 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta-${{ matrix.service }}
+      
+      - name: Extract metadata for backend
+        if: matrix.service == 'backend'
+        id: meta-backend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ matrix.service == 'backend' && env.IMAGE_NAME_BACKEND || env.IMAGE_NAME_FRONTEND }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -59,19 +62,63 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix={{branch}}-
-      - uses: docker/build-push-action@v5
+      
+      - name: Extract metadata for frontend
+        if: matrix.service == 'frontend'
+        id: meta-frontend
+        uses: docker/metadata-action@v5
         with:
-          context: ./src/${{ matrix.service }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix={{branch}}-
+      
+      - name: Extract version
+        id: version
+        run: |
+          if [[ "${{ matrix.service }}" == "backend" && "${{ steps.meta-backend.outputs.version }}" != "" ]]; then
+            echo "version=${{ steps.meta-backend.outputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ matrix.service }}" == "frontend" && "${{ steps.meta-frontend.outputs.version }}" != "" ]]; then
+            echo "version=${{ steps.meta-frontend.outputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Build and push backend
+        if: matrix.service == 'backend'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/backend
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta-${{ matrix.service }}.outputs.tags }}
-          labels: ${{ steps.meta-${{ matrix.service }}.outputs.labels }}
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
             BUILD_DATE=${{ github.event.head_commit.timestamp }}
             VCS_REF=${{ github.sha }}
-            VERSION=${{ steps.meta-${{ matrix.service }}.outputs.version }}
+            VERSION=${{ steps.version.outputs.version }}
+      
+      - name: Build and push frontend
+        if: matrix.service == 'frontend'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ steps.version.outputs.version }}
 
   deploy-staging:
     name: Deploy to Staging
@@ -88,6 +135,7 @@ jobs:
           echo "Deploying to staging..."
           echo "Backend: ${{ needs.build-and-push.outputs.backend-image }}"
           echo "Frontend: ${{ needs.build-and-push.outputs.frontend-image }}"
+          echo "Version: ${{ needs.build-and-push.outputs.version }}"
 
   deploy-production:
     name: Deploy to Production
@@ -104,6 +152,7 @@ jobs:
           echo "Deploying to production..."
           echo "Backend: ${{ needs.build-and-push.outputs.backend-image }}"
           echo "Frontend: ${{ needs.build-and-push.outputs.frontend-image }}"
+          echo "Version: ${{ needs.build-and-push.outputs.version }}"
 
   create-release:
     name: Create GitHub Release
@@ -118,7 +167,7 @@ jobs:
           fetch-depth: 0
       - name: Generate changelog
         run: |
-          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s" > CHANGELOG.txt
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s" > CHANGELOG.txt || echo "First release" > CHANGELOG.txt
       - uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
