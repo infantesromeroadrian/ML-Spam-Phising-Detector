@@ -96,6 +96,7 @@ dmypy.json
 # Project-specific: Development docs (NO commit)
 README_DEV.md
 DEPLOYMENT_CHECKLIST.md
+historyMD/
 
 # Requirements (using pyproject.toml + uv.lock)
 requirements.txt
