@@ -1,32 +1,38 @@
 # 📧 SPAM & PHISHING Detector - Full Stack ML Application
 
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![React](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/typescript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
+[![Reflex](https://img.shields.io/badge/reflex-0.6+-purple.svg)](https://reflex.dev)
+[![FastAPI](https://img.shields.io/badge/fastapi-0.109+-green.svg)](https://fastapi.tiangolo.com)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-black)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Production-ready full-stack email threat detection system** using Machine Learning with modern React frontend and FastAPI backend.
+**Production-ready full-stack email threat detection system** using Machine Learning with Reflex (Python) frontend and FastAPI backend.
 
 ## 🏗️ Project Structure
 
 ```
 spam-phishing-detector/
 ├── src/
-│   ├── backend/          # FastAPI + ML models (Python 3.12)
-│   │   ├── spam_detector/  # Python package (flat layout)
-│   │   ├── tests/
-│   │   ├── models/       # Git LFS tracked
-│   │   └── README.md     # Backend docs
-│   └── frontend/         # React + TypeScript + Vite
-│       ├── src/
-│       ├── public/
-│       └── README.md     # Frontend docs
-├── docs/                 # Documentation
-│   └── README_FULL_STACK.md
-├── docker-compose.yml    # Full-stack deployment
+│   ├── backend/              # FastAPI + ML (Python 3.12)
+│   │   ├── spam_detector/    # Python package (hexagonal architecture)
+│   │   ├── tests/            # Unit + integration tests
+│   │   ├── Dockerfile        # Production-ready (multi-stage, NO-ROOT)
+│   │   └── .dockerignore
+│   └── frontend/             # Reflex UI (Python fullstack)
+│       ├── spam_detector_ui/ # Reflex application
+│       │   ├── components/   # UI components
+│       │   ├── pages/        # Pages (index)
+│       │   ├── state/        # State management
+│       │   └── services/     # API client
+│       ├── Dockerfile        # Production-ready (multi-stage, NO-ROOT)
+│       └── .dockerignore
+├── models/                   # ML models (Git LFS tracked, mounted as volume in Docker)
+├── docs/                     # Documentation
+├── historyMD/                # Development history and guides
+├── docker-compose.yml        # Full-stack deployment (backend + frontend)
 ├── LICENSE
-└── README.md             # This file
+└── README.md                 # This file
 ```
 
 ## ✨ Features
@@ -38,24 +44,24 @@ spam-phishing-detector/
 - **Model Versioning**: MLflow + Git LFS
 
 ### 🚀 Interfaces
-- **Modern Web UI**: React with dark glassmorphism theme
+- **Modern Web UI**: Reflex (Python fullstack framework)
 - **REST API**: FastAPI with automatic OpenAPI docs
 - **CLI Tool**: Rich terminal interface
 
 ### 🏛️ Architecture
-- **Backend**: Hexagonal/Clean Architecture
-- **Frontend**: Component-based React with TypeScript
-- **Type Safety**: End-to-end with Pydantic + TypeScript
+- **Backend**: Hexagonal/Clean Architecture (FastAPI)
+- **Frontend**: Reflex (Python, generates Next.js)
+- **Type Safety**: End-to-end with Pydantic
 - **Testing**: Comprehensive test suites
+- **Deployment**: Docker Compose with multi-stage builds
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Python 3.10+** (backend)
-- **Node.js 18+** (frontend)
+- **Python 3.12+** (backend + frontend)
 - **uv** (recommended): `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **Docker** (optional, for containerized deployment)
+- **Docker** (recommended, for containerized deployment)
 
 ### Option 1: Development Setup
 
@@ -79,41 +85,55 @@ spam-detector-api
 spam-detector predict "URGENT! You won a lottery!"
 ```
 
-#### Frontend
+#### Frontend (Reflex)
 
 ```bash
 cd src/frontend
 
-# Install dependencies
-npm install
+# Create virtual environment
+python -m venv venv && source venv/bin/activate
 
-# Create .env file
-echo "VITE_API_URL=http://localhost:8000" > .env
+# Install dependencies
+pip install -r requirements.txt
 
 # Start dev server
-npm run dev
-# → http://localhost:5173
+reflex run
+# → http://localhost:3000
 ```
 
-### Option 2: Docker Compose (Full Stack)
+### Option 2: Docker Compose (Recommended)
 
 ```bash
 # Build and run both services
-docker-compose up --build
+docker-compose build
+docker-compose up -d
+
+# Verify health checks
+docker ps
 
 # Access:
-# - Frontend: http://localhost:5173
+# - Frontend: http://localhost:3000
 # - Backend API: http://localhost:8000
 # - API Docs: http://localhost:8000/docs
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
+
+**See [historyMD/DOCKER_GUIDE.md](historyMD/DOCKER_GUIDE.md) for complete Docker documentation.**
 
 ## 📚 Documentation
 
 | Document | Description |
 |----------|-------------|
 | [Backend README](src/backend/README.md) | Backend setup, API docs, CLI usage |
-| [Frontend README](src/frontend/README.md) | Frontend development, components, deployment |
-| [Full-Stack Guide](docs/README_FULL_STACK.md) | Complete setup and architecture guide |
+| [Frontend README](src/frontend/README.md) | Reflex UI setup and components |
+| [Docker Guide](historyMD/DOCKER_GUIDE.md) | Complete Docker deployment guide |
+| [Refactor Summary](historyMD/REFACTOR_SUMMARY.md) | Recent architecture changes |
+| [Full-Stack Guide](docs/README_FULL_STACK.md) | Complete setup and architecture |
 
 ## 🎯 Tech Stack
 
@@ -125,13 +145,11 @@ docker-compose up --build
 - **Tooling**: uv, ruff, mypy
 
 ### Frontend
-- **Framework**: React 18 + TypeScript
-- **Build**: Vite
-- **Styling**: Tailwind CSS
-- **Animation**: Framer Motion
-- **Charts**: Chart.js
-- **State**: React Query
-- **HTTP**: Axios
+- **Framework**: Reflex 0.6+ (Python fullstack)
+- **Build**: Next.js (auto-generated by Reflex)
+- **State**: Built-in Reflex state management
+- **HTTP**: httpx (async client)
+- **Styling**: Built-in Chakra UI components
 
 ## 📊 ML Models
 
@@ -185,12 +203,12 @@ pytest --cov=spam_detector      # With coverage
 pytest tests/unit               # Only unit tests
 ```
 
-### Frontend
+### Frontend (Reflex)
 
 ```bash
 cd src/frontend
-npm run lint                    # Lint code
-npm run build                   # Build for production
+reflex init                     # Initialize (first time only)
+reflex export                   # Build for production
 ```
 
 ## 🚢 Deployment
@@ -200,28 +218,34 @@ npm run build                   # Build for production
 - **Railway/Render**: Connect GitHub repo
 - **AWS ECS/EKS**: Push to ECR, deploy container
 
-### Frontend Options
-- **Vercel**: Connect GitHub, auto-deploy
-- **Netlify**: Connect repo, set build command
-- **Cloudflare Pages**: Similar to Vercel/Netlify
-- **Static**: Build and serve via nginx/CDN
-
-### Full-Stack
+### Full-Stack (Docker Compose)
 ```bash
-docker-compose -f docker-compose.yml up -d
+# Build and deploy
+docker-compose build
+docker-compose up -d
+
+# View status
+docker ps
+
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8000
 ```
 
-See [deployment guide](docs/README_FULL_STACK.md#deployment) for details.
+**Frontend URL**: `http://localhost:3000`  
+**Backend URL**: `http://localhost:8000`
+
+See [Docker Guide](historyMD/DOCKER_GUIDE.md) for complete deployment instructions.
 
 ## 🎨 Frontend Preview
 
-The modern React frontend features:
-- 🌑 Dark glassmorphism cybersecurity theme
-- 📊 Dual gauge charts for threat visualization
-- 🎭 Smooth animations with Framer Motion
-- 🎯 Color-coded risk levels (green → red)
-- 📱 Responsive mobile-friendly design
-- ⚡ Fast loading with Vite HMR
+The Reflex UI features:
+- 🐍 **Pure Python** - No JavaScript/TypeScript needed
+- 🎨 Built-in Chakra UI components
+- 🔄 Real-time state management
+- 📊 Classification results with confidence meters
+- 🎯 Color-coded risk levels
+- 📱 Responsive design
+- ⚡ Fast server-side rendering (SSR) with Next.js
 
 ## 🔐 Security
 
@@ -261,4 +285,20 @@ MIT License - see [LICENSE](LICENSE) file
 
 **⚡ Built for production ML systems**
 
-For detailed setup and architecture information, see [Full-Stack Guide](docs/README_FULL_STACK.md).
+## 📦 Recent Changes (2026-01-11)
+
+- ✅ Migrated frontend from React/Vite to **Reflex** (Python fullstack)
+- ✅ Both Docker containers run as **NO-ROOT** for security
+- ✅ Enhanced health checks (validate ML models loading)
+- ✅ Moved `models/` to project root (better structure)
+- ✅ Reduced image sizes by **~70%** (multi-stage builds + .dockerignore)
+- ✅ Simplified stack: **100% Python** (no Node.js/TypeScript)
+
+See [REFACTOR_SUMMARY.md](historyMD/REFACTOR_SUMMARY.md) for details.
+
+---
+
+For detailed setup and architecture information:
+- **Docker**: [Docker Guide](historyMD/DOCKER_GUIDE.md)
+- **Quick Start**: [Quick Start](historyMD/QUICK_START.md)
+- **Full-Stack**: [Full-Stack Guide](docs/README_FULL_STACK.md)
