@@ -1,10 +1,19 @@
 # 🛡️ Email Threat Intelligence Platform
+<!-- Badges de CI/CD y calidad -->
+[![CI Pipeline](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/ci.yml/badge.svg)](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/ci.yml)
+[![Security Analysis](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/security.yml/badge.svg)](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/security.yml)
+[![CD Pipeline](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/cd.yml/badge.svg)](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/actions/workflows/cd.yml)
+[![codecov](https://codecov.io/gh/adrianinfantes/ML-Spam-Phishing-Detector/branch/main/graph/badge.svg)](https://codecov.io/gh/adrianinfantes/ML-Spam-Phishing-Detector)
+[![CodeQL](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/workflows/CodeQL/badge.svg)](https://github.com/adrianinfantes/ML-Spam-Phishing-Detector/security/code-scanning)
 
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
+<!-- Badges técnicos -->
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/fastapi-0.109+-green.svg)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-black)](https://github.com/astral-sh/ruff)
+[![Type Checked](https://img.shields.io/badge/type_checked-mypy-blue)](http://mypy-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 
 **Production-ready email threat detection system** using Machine Learning. Dual SPAM + Phishing classification with professional SOC-style dashboard.
 

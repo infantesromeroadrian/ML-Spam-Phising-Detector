@@ -1,0 +1,204 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  UV_VERSION: "0.5.18"
+  
+jobs:
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install dependencies
+        working-directory: ./src/backend
+        run: uv sync --frozen --all-extras
+      - name: Check formatting with ruff
+        working-directory: ./src/backend
+        run: uv run ruff format --check .
+      - name: Lint with ruff
+        working-directory: ./src/backend
+        run: uv run ruff check . --output-format=github
+
+  type-check:
+    name: Type Check (mypy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install dependencies
+        working-directory: ./src/backend
+        run: uv sync --frozen --all-extras
+      - name: Type check with mypy
+        working-directory: ./src/backend
+        run: uv run mypy spam_detector --config-file pyproject.toml
+
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install dependencies
+        working-directory: ./src/backend
+        run: uv sync --frozen --all-extras
+      - name: Run unit tests
+        working-directory: ./src/backend
+        run: |
+          uv run pytest tests/unit -v --tb=short --color=yes \
+            --cov=spam_detector --cov-report=term-missing \
+            --cov-report=xml --cov-report=html \
+            --junit-xml=test-results-unit.xml
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./src/backend/coverage.xml
+          flags: unittests
+          fail_ci_if_error: false
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install dependencies
+        working-directory: ./src/backend
+        run: uv sync --frozen --all-extras
+      - name: Run integration tests
+        working-directory: ./src/backend
+        run: uv run pytest tests/integration -v --tb=short --color=yes
+
+  docker-build:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/${{ matrix.service }}
+          push: false
+          tags: spam-detector-${{ matrix.service }}:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  test-e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [docker-build]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: docker/setup-buildx-action@v3
+      - name: Start services
+        run: docker-compose up -d --build
+      - name: Wait for services
+        run: |
+          for i in {1..30}; do
+            curl -f http://localhost:8000/health && break || sleep 2
+          done
+          for i in {1..10}; do
+            curl -f http://localhost:3000/health && break || sleep 2
+          done
+      - name: Test API endpoints
+        run: |
+          curl -f http://localhost:8000/health
+          curl -f http://localhost:8000/docs
+      - name: Cleanup
+        if: always()
+        run: docker-compose down -v
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Run Bandit security linter
+        working-directory: ./src/backend
+        run: |
+          uv pip install bandit[toml]
+          uv run bandit -r spam_detector || true
+      - uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          extra_args: --only-verified
+
+  all-tests-pass:
+    name: All Checks Pass
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, test-unit, test-integration, test-e2e, security]
+    if: always()
+    steps:
+      - name: Check all tests passed
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "Some checks failed!"
+            exit 1
+          else
+            echo "All checks passed!"
+          fi
