@@ -1,304 +1,258 @@
-# 📧 SPAM & PHISHING Detector - Full Stack ML Application
+# 🛡️ Email Threat Intelligence Platform
 
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![Reflex](https://img.shields.io/badge/reflex-0.6+-purple.svg)](https://reflex.dev)
 [![FastAPI](https://img.shields.io/badge/fastapi-0.109+-green.svg)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-black)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Production-ready full-stack email threat detection system** using Machine Learning with Reflex (Python) frontend and FastAPI backend.
+**Production-ready email threat detection system** using Machine Learning. Dual SPAM + Phishing classification with professional SOC-style dashboard.
+
+![Dashboard Preview](docs/dashboard-preview.png)
 
 ## 🏗️ Project Structure
 
 ```
-spam-phishing-detector/
+ML-Spam-Phishing-Detector/
 ├── src/
-│   ├── backend/              # FastAPI + ML (Python 3.12)
-│   │   ├── spam_detector/    # Python package (hexagonal architecture)
-│   │   ├── tests/            # Unit + integration tests
-│   │   ├── Dockerfile        # Production-ready (multi-stage, NO-ROOT)
-│   │   └── .dockerignore
-│   └── frontend/             # Reflex UI (Python fullstack)
-│       ├── spam_detector_ui/ # Reflex application
-│       │   ├── components/   # UI components
-│       │   ├── pages/        # Pages (index)
-│       │   ├── state/        # State management
-│       │   └── services/     # API client
-│       ├── Dockerfile        # Production-ready (multi-stage, NO-ROOT)
-│       └── .dockerignore
-├── models/                   # ML models (Git LFS tracked, mounted as volume in Docker)
-├── docs/                     # Documentation
-├── historyMD/                # Development history and guides
-├── docker-compose.yml        # Full-stack deployment (backend + frontend)
-├── LICENSE
-└── README.md                 # This file
+│   ├── backend/                  # FastAPI + ML (Python 3.12)
+│   │   ├── spam_detector/        # Hexagonal architecture
+│   │   │   ├── domain/           # Business entities
+│   │   │   ├── application/      # Use cases
+│   │   │   └── infrastructure/   # API, CLI, adapters
+│   │   ├── tests/                # Unit + integration tests
+│   │   ├── Dockerfile            # Multi-stage, non-root
+│   │   └── pyproject.toml        # Dependencies (uv)
+│   │
+│   └── frontend/                 # Professional SOC Dashboard
+│       ├── index.html            # Main dashboard
+│       ├── css/styles.css        # Dark theme (1000+ lines)
+│       ├── js/app.js             # API client & UI controller
+│       ├── nginx.conf            # Nginx configuration
+│       └── Dockerfile            # Nginx Alpine
+│
+├── models/                       # ML models (Git LFS)
+│   ├── spam_detector_*_latest.joblib
+│   ├── phishing_detector_*_latest.joblib
+│   └── v1.0.0/                   # Versioned models
+│
+├── docker-compose.yml            # Full-stack deployment
+└── README.md
 ```
 
 ## ✨ Features
 
-### 🎯 ML Capabilities
-- **Dual Detection**: Simultaneous SPAM and PHISHING classification
-- **High Accuracy**: ~95% SPAM, ~92% PHISHING detection
+### 🎯 ML Detection
+- **Dual Analysis**: SPAM + Phishing classification in parallel
+- **High Accuracy**: ~95% SPAM, ~92% Phishing detection
 - **Fast Inference**: <10ms per email
-- **Model Versioning**: MLflow + Git LFS
+- **Threat Intelligence Report**: Risk score, IOCs, trigger words
 
-### 🚀 Interfaces
-- **Modern Web UI**: Reflex (Python fullstack framework)
-- **REST API**: FastAPI with automatic OpenAPI docs
-- **CLI Tool**: Rich terminal interface
+### 🖥️ SOC-Style Dashboard
+- **Dark Theme**: Professional cybersecurity design
+- **Real-time Analysis**: Instant classification results
+- **Threat Visualization**: Risk gauges, IOC panels, recommendations
+- **Sample Threats**: Pre-loaded examples for testing
 
 ### 🏛️ Architecture
 - **Backend**: Hexagonal/Clean Architecture (FastAPI)
-- **Frontend**: Reflex (Python, generates Next.js)
-- **Type Safety**: End-to-end with Pydantic
-- **Testing**: Comprehensive test suites
-- **Deployment**: Docker Compose with multi-stage builds
+- **Frontend**: Vanilla HTML/CSS/JS (zero dependencies)
+- **Containers**: Multi-stage builds, non-root user
+- **Models**: Mounted as Docker volume (hot-swap capable)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+- **Docker** + **Docker Compose** (recommended)
+- Or: Python 3.12+ with `uv`
 
-- **Python 3.12+** (backend + frontend)
-- **uv** (recommended): `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **Docker** (recommended, for containerized deployment)
-
-### Option 1: Development Setup
-
-#### Backend
+### Option 1: Docker Compose (Recommended)
 
 ```bash
-cd src/backend
+# Clone repository
+git clone https://github.com/infantesromeroadrian/ML-Spam-Phising-Detector.git
+cd ML-Spam-Phising-Detector
 
-# Create virtual environment
-uv venv && source .venv/bin/activate
+# Build and run
+docker compose build
+docker compose up -d
 
-# Install dependencies
-uv sync
+# Verify containers are healthy
+docker compose ps
 
-# Run API server
-spam-detector-api
-# → http://localhost:8000
-# → Docs: http://localhost:8000/docs
-
-# Or use CLI
-spam-detector predict "URGENT! You won a lottery!"
+# Access:
+# - Dashboard: http://localhost:3000
+# - API Docs:  http://localhost:8000/docs
 ```
 
-#### Frontend (Reflex)
+### Option 2: Local Development
 
 ```bash
+# Backend
+cd src/backend
+uv venv && source .venv/bin/activate
+uv sync
+uvicorn spam_detector.infrastructure.api.main:app --reload
+# → http://localhost:8000
+
+# Frontend (serve static files)
 cd src/frontend
-
-# Create virtual environment
-python -m venv venv && source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start dev server
-reflex run
+python -m http.server 3000
 # → http://localhost:3000
 ```
 
-### Option 2: Docker Compose (Recommended)
-
-```bash
-# Build and run both services
-docker-compose build
-docker-compose up -d
-
-# Verify health checks
-docker ps
-
-# Access:
-# - Frontend: http://localhost:3000
-# - Backend API: http://localhost:8000
-# - API Docs: http://localhost:8000/docs
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-**See [historyMD/DOCKER_GUIDE.md](historyMD/DOCKER_GUIDE.md) for complete Docker documentation.**
-
-## 📚 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Backend README](src/backend/README.md) | Backend setup, API docs, CLI usage |
-| [Frontend README](src/frontend/README.md) | Reflex UI setup and components |
-| [Docker Guide](historyMD/DOCKER_GUIDE.md) | Complete Docker deployment guide |
-| [Refactor Summary](historyMD/REFACTOR_SUMMARY.md) | Recent architecture changes |
-| [Full-Stack Guide](docs/README_FULL_STACK.md) | Complete setup and architecture |
-
-## 🎯 Tech Stack
-
-### Backend
-- **Framework**: FastAPI
-- **ML**: scikit-learn, NLTK
-- **Validation**: Pydantic
-- **Testing**: pytest
-- **Tooling**: uv, ruff, mypy
-
-### Frontend
-- **Framework**: Reflex 0.6+ (Python fullstack)
-- **Build**: Next.js (auto-generated by Reflex)
-- **State**: Built-in Reflex state management
-- **HTTP**: httpx (async client)
-- **Styling**: Built-in Chakra UI components
-
 ## 📊 ML Models
 
-| Model | Algorithm | Accuracy | Samples | Features |
-|-------|-----------|----------|---------|----------|
-| SPAM | Logistic Regression | ~95% | 5,572 | TF-IDF (5000) |
-| PHISHING | Logistic Regression | ~92% | 11,430 | TF-IDF (5000) |
+| Model | Algorithm | Accuracy | Dataset Size |
+|-------|-----------|----------|--------------|
+| SPAM | Logistic Regression | ~95% | 5,572 emails |
+| Phishing | Logistic Regression | ~92% | 11,430 emails |
 
-Models are versioned with **Git LFS** and tracked with **MLflow**.
+Models use TF-IDF vectorization (5000 features) and are tracked with **Git LFS**.
 
 ## 🔌 API Usage
+
+### Health Check
+
+```bash
+curl http://localhost:8000/health
+```
+
+```json
+{
+  "status": "healthy",
+  "models_loaded": true,
+  "models": {"spam": true, "phishing": true}
+}
+```
 
 ### Classify Email
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/classify \
   -H "Content-Type: application/json" \
-  -d '{
-    "email_text": "URGENT! You won a lottery! Click here now!"
-  }'
+  -d '{"email_text": "URGENT! You won $1,000,000! Click here now!"}'
 ```
-
-**Response:**
 
 ```json
 {
-  "verdict": "PHISHING",
-  "risk_level": "HIGH",
+  "verdict": "SPAM+PHISHING",
+  "risk_level": "CRITICAL",
   "is_malicious": true,
-  "spam_probability": 0.505,
-  "phishing_probability": 0.985,
-  "execution_time_ms": 1.81,
+  "spam_probability": 0.68,
+  "phishing_probability": 0.96,
+  "execution_time_ms": 1.2,
   "threat_report": {
-    "risk_score": 84,
-    "iocs": [...],
-    "recommendations": [...]
+    "risk_score": 87,
+    "iocs": [
+      {"type": "keyword_financial", "value": "winner, prize", "severity": "critical"},
+      {"type": "pattern", "value": "$1,000,000", "severity": "medium"}
+    ],
+    "recommendations": [
+      "🚫 Quarantine this email immediately",
+      "🔒 Block sender domain"
+    ],
+    "spam_trigger_words": [
+      {"word": "claim", "contribution": 0.82},
+      {"word": "prize", "contribution": 0.67}
+    ]
   }
 }
 ```
 
-See [API documentation](http://localhost:8000/docs) for complete endpoints.
+### Interactive API Docs
+
+Visit `http://localhost:8000/docs` for Swagger UI.
+
+## 🐳 Docker Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Docker Compose                        │
+├─────────────────────────┬───────────────────────────────┤
+│      Frontend           │          Backend              │
+│    (Nginx Alpine)       │      (Python 3.12)            │
+│                         │                               │
+│  ┌─────────────────┐    │    ┌─────────────────────┐    │
+│  │   index.html    │    │    │     FastAPI         │    │
+│  │   css/styles    │    │    │   /api/v1/classify  │    │
+│  │   js/app.js     │────┼───▶│   /health           │    │
+│  └─────────────────┘    │    └──────────┬──────────┘    │
+│                         │               │               │
+│    Port 3000            │    Port 8000  │               │
+└─────────────────────────┴───────────────┼───────────────┘
+                                          │
+                                          ▼
+                                ┌─────────────────┐
+                                │  models/        │
+                                │  (volume mount) │
+                                └─────────────────┘
+```
+
+**Key Features:**
+- Multi-stage builds (minimal image size)
+- Non-root user (`appuser`, UID 1001)
+- Health checks on both containers
+- Models mounted as read-only volume
 
 ## 🧪 Testing
 
-### Backend
-
 ```bash
 cd src/backend
-pytest                           # Run all tests
-pytest --cov=spam_detector      # With coverage
-pytest tests/unit               # Only unit tests
+
+# Run all tests
+pytest
+
+# With coverage
+pytest --cov=spam_detector
+
+# Only unit tests
+pytest tests/unit
 ```
 
-### Frontend (Reflex)
+## 🎨 Dashboard Features
 
-```bash
-cd src/frontend
-reflex init                     # Initialize (first time only)
-reflex export                   # Build for production
-```
-
-## 🚢 Deployment
-
-### Backend Options
-- **Docker**: Use `src/backend/Dockerfile`
-- **Railway/Render**: Connect GitHub repo
-- **AWS ECS/EKS**: Push to ECR, deploy container
-
-### Full-Stack (Docker Compose)
-```bash
-# Build and deploy
-docker-compose build
-docker-compose up -d
-
-# View status
-docker ps
-
-# Frontend: http://localhost:3000
-# Backend:  http://localhost:8000
-```
-
-**Frontend URL**: `http://localhost:3000`  
-**Backend URL**: `http://localhost:8000`
-
-See [Docker Guide](historyMD/DOCKER_GUIDE.md) for complete deployment instructions.
-
-## 🎨 Frontend Preview
-
-The Reflex UI features:
-- 🐍 **Pure Python** - No JavaScript/TypeScript needed
-- 🎨 Built-in Chakra UI components
-- 🔄 Real-time state management
-- 📊 Classification results with confidence meters
-- 🎯 Color-coded risk levels
-- 📱 Responsive design
-- ⚡ Fast server-side rendering (SSR) with Next.js
+| Feature | Description |
+|---------|-------------|
+| **Email Input** | Large text area for pasting emails |
+| **Sample Threats** | Pre-loaded SPAM, Phishing, and Combined examples |
+| **Risk Gauge** | Visual 0-100 risk score indicator |
+| **Dual Verdicts** | Side-by-side SPAM and Phishing results |
+| **IOC Panel** | Detected Indicators of Compromise |
+| **Trigger Words** | ML feature analysis with contribution scores |
+| **Recommendations** | Actionable security guidance |
+| **Backend Status** | Real-time API health indicator |
 
 ## 🔐 Security
 
-- ✅ Input validation (Pydantic)
-- ✅ CORS configured
-- ✅ No secrets in code
-- ✅ Type safety (mypy strict)
-- ✅ Dependency scanning ready
-- ⚠️ Rate limiting (TODO for production)
-- ⚠️ Authentication (TODO for production)
+- ✅ Input validation (Pydantic schemas)
+- ✅ CORS configured for frontend origin
+- ✅ Non-root Docker containers
+- ✅ No secrets in codebase
+- ✅ Type safety (mypy strict mode)
+- ✅ Models mounted read-only
 
-## 🤝 Contributing
+## 🛠️ Tech Stack
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/my-feature`
-3. Make changes
-4. Run tests: `cd src/backend && pytest`
-5. Commit: `git commit -m "feat: add feature"`
-6. Push: `git push origin feature/my-feature`
-7. Open Pull Request
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | HTML5, CSS3, Vanilla JS |
+| **Web Server** | Nginx Alpine |
+| **Backend** | FastAPI, Pydantic |
+| **ML** | scikit-learn, NLTK |
+| **Containers** | Docker, Docker Compose |
+| **Package Manager** | uv (Python) |
+| **Linting** | ruff, mypy |
+| **Testing** | pytest |
 
 ## 📝 License
 
-MIT License - see [LICENSE](LICENSE) file
+MIT License - see [LICENSE](LICENSE)
 
-## 🏆 Credits
+## 👤 Author
 
-**Built with:**
-- Clean Architecture principles
-- Hexagonal/Ports & Adapters pattern
-- Modern React best practices
-- Type-driven development
-
-**Author**: Adrian Infantes Romero
+**Adrian Infantes Romero**
 
 ---
 
-**⚡ Built for production ML systems**
-
-## 📦 Recent Changes (2026-01-11)
-
-- ✅ Migrated frontend from React/Vite to **Reflex** (Python fullstack)
-- ✅ Both Docker containers run as **NO-ROOT** for security
-- ✅ Enhanced health checks (validate ML models loading)
-- ✅ Moved `models/` to project root (better structure)
-- ✅ Reduced image sizes by **~70%** (multi-stage builds + .dockerignore)
-- ✅ Simplified stack: **100% Python** (no Node.js/TypeScript)
-
-See [REFACTOR_SUMMARY.md](historyMD/REFACTOR_SUMMARY.md) for details.
-
----
-
-For detailed setup and architecture information:
-- **Docker**: [Docker Guide](historyMD/DOCKER_GUIDE.md)
-- **Quick Start**: [Quick Start](historyMD/QUICK_START.md)
-- **Full-Stack**: [Full-Stack Guide](docs/README_FULL_STACK.md)
+**⚡ Built for production ML systems with security-first design**
