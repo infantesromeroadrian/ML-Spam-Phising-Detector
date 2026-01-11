@@ -90,7 +90,7 @@ jobs:
       
       - name: Build and push backend
         if: matrix.service == 'backend'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./src/backend
           platforms: linux/amd64,linux/arm64
@@ -106,7 +106,7 @@ jobs:
       
       - name: Build and push frontend
         if: matrix.service == 'frontend'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./src/frontend
           platforms: linux/amd64,linux/arm64
