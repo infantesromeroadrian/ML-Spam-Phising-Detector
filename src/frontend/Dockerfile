@@ -2,7 +2,7 @@
 # Frontend - Static files served by Nginx
 # ============================================
 
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
 
 # Install curl for health check
 RUN apk add --no-cache curl
