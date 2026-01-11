@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.spam_detector.domain.entities import Email, SinglePrediction
-from src.spam_detector.domain.services import EmailClassifierService
+from spam_detector.domain.entities import Email, SinglePrediction
+from spam_detector.domain.services import EmailClassifierService
 
 
 class TestEmailClassifierService:

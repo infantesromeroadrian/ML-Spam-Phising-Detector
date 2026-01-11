@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.spam_detector.domain.entities import (
+from spam_detector.domain.entities import (
     ClassificationResult,
     Email,
     SinglePrediction,

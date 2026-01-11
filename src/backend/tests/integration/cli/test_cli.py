@@ -3,7 +3,7 @@
 from pathlib import Path
 import json
 
-from src.spam_detector.infrastructure.cli import app
+from spam_detector.infrastructure.cli import app
 from typer.testing import CliRunner
 import pytest
 

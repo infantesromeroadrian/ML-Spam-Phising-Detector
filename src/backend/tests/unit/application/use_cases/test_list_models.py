@@ -2,8 +2,8 @@
 
 from unittest.mock import Mock
 
-from src.spam_detector.application.use_cases import ListModelsUseCase
-from src.spam_detector.domain.entities import ModelMetadata
+from spam_detector.application.use_cases import ListModelsUseCase
+from spam_detector.domain.entities import ModelMetadata
 import pytest
 
 @pytest.fixture

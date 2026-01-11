@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from src.spam_detector.domain.entities import ModelMetadata
-from src.spam_detector.infrastructure.adapters import JoblibModelLoader
+from spam_detector.domain.entities import ModelMetadata
+from spam_detector.infrastructure.adapters import JoblibModelLoader
 import pytest
 
 @pytest.fixture
