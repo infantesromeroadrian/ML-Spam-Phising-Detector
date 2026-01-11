@@ -1,4 +1,11 @@
+# ============================================
+# Docker Compose for SPAM/Phishing Detector
+# Backend: FastAPI (Python)
+# Frontend: Nginx (HTML/CSS/JS)
+# ============================================
+
 services:
+  # -------------------- Backend API (FastAPI) --------------------
   backend:
     build:
       context: ./src/backend
@@ -9,31 +16,40 @@ services:
     environment:
       - API_HOST=0.0.0.0
       - API_PORT=8000
-      - API_CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+      # CORS for frontend (puerto 3000)
+      - API_CORS_ORIGINS=http://localhost:3000,http://frontend:3000,http://127.0.0.1:3000
     volumes:
-      - ./src/backend/models:/app/models
+      # Montar modelos ML desde host (no copiados en imagen)
+      - ./models:/app/models:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
+  # -------------------- Frontend UI (Nginx) --------------------
   frontend:
     build:
       context: ./src/frontend
       dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=http://localhost:8000
     container_name: spam-detector-frontend
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://backend:8000
+      - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
 
+# -------------------- Network Configuration --------------------
 networks:
   default:
     name: spam-detector-network
+    driver: bridge

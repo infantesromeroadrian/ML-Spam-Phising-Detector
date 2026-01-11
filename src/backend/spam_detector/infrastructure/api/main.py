@@ -163,7 +163,7 @@ def root() -> str:
             <h1>📧 Email Classifier</h1>
             <p>AI-Powered SPAM & PHISHING Detection</p>
             <div class="links">
-                <a href="http://localhost:5173" target="_blank">🚀 Launch App (Dev)</a>
+                <a href="http://localhost:3000" target="_blank">🚀 Launch App</a>
                 <a href="/docs">📚 API Docs</a>
                 <a href="/redoc">📖 Reference</a>
             </div>
@@ -174,14 +174,56 @@ def root() -> str:
 
 
 @app.get("/health", tags=["Health"])
-def health() -> dict[str, str]:
+def health() -> dict[str, str | bool | dict]:
     """
-    Health check endpoint.
+    Enhanced health check endpoint.
+
+    Validates:
+    - API is running
+    - Models are loaded and accessible
+    - Container is properly initialized
 
     Returns:
-        Health status
+        Health status with model availability
     """
-    return {"status": "healthy"}
+    try:
+        # Check if container exists
+        container = getattr(app.state, "container", None)
+        if container is None:
+            return {
+                "status": "unhealthy",
+                "error": "DI container not initialized",
+                "models_loaded": False,
+            }
+
+        # Check if models directory is accessible
+        from pathlib import Path
+
+        models_dir = Path(settings.models_dir)
+        if not models_dir.exists():
+            return {
+                "status": "unhealthy",
+                "error": f"Models directory not found: {models_dir}",
+                "models_loaded": False,
+            }
+
+        # Check if latest model symlinks exist
+        spam_model = models_dir / "spam_detector_model_latest.joblib"
+        phishing_model = models_dir / "phishing_detector_model_latest.joblib"
+
+        models_status = {"spam": spam_model.exists(), "phishing": phishing_model.exists()}
+
+        all_models_loaded = all(models_status.values())
+
+        return {
+            "status": "healthy" if all_models_loaded else "degraded",
+            "models_loaded": all_models_loaded,
+            "models": models_status,
+            "api_version": "1.0.0",
+        }
+
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e), "models_loaded": False}
 
 
 def run_api() -> None:

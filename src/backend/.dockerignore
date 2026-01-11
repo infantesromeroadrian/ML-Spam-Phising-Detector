@@ -1,0 +1,92 @@
+# Python cache y compilados
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+coverage.xml
+
+# Linting y type checking
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (exclude most, but keep README.md for pyproject.toml)
+docs/
+# README.md is NEEDED by pyproject.toml (do not ignore)
+# Only ignore other markdown files
+CHANGELOG.md
+CONTRIBUTING.md
+*.draft.md
+
+# Tests (NO copiar a producción)
+tests/
+pytest.ini
+.pytest.ini
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+*.log
+
+# Modelos ML (se montan con volumen)
+models/*_2026*.joblib
+models/*.pkl
+models/*.h5
+models/*.pt
+models/*.pth
+
+# Mantener solo symlinks y versiones estables
+!models/*_latest.joblib
+!models/v*/
+
+# MLflow
+mlruns/
+mlflow.db
+.mlflow/
+
+# Temporary
+*.tmp
+*.temp
+
+# Lock file (ya se usa en build)
+# uv.lock se INCLUYE para reproducibilidad
