@@ -82,3 +82,6 @@ dev = [
     "mypy>=1.19.1",
     "ruff>=0.14.10",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"**/api/routers/*.py" = ["B008"]  # Allow function calls in argument defaults (FastAPI Depends)

@@ -58,20 +58,20 @@ def predict_command(
         console.print("Use: email-classifier predict <text>")
         console.print("  or: email-classifier predict --file <path>")
         console.print("  or: cat file.txt | email-classifier predict")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     # Validate format
     if format not in ("text", "json"):
         console.print(f"[red]Error:[/red] Invalid format '{format}'")
         console.print("Valid formats: text, json")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     # Validate detail level
     valid_details: list[DetailLevel] = ["simple", "detailed", "debug"]
     if detail not in valid_details:
         console.print(f"[red]Error:[/red] Invalid detail level '{detail}'")
         console.print(f"Valid levels: {', '.join(valid_details)}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     try:
         # Get use case
@@ -90,16 +90,16 @@ def predict_command(
 
     except ValueError as e:
         console.print(f"[red]Error:[/red] {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     except FileNotFoundError as e:
         console.print(f"[red]Error:[/red] Model not found: {e}")
         console.print("\nMake sure you have trained models in the models directory.")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     except Exception as e:
         console.print(f"[red]Unexpected error:[/red] {e}")
         if container._settings.verbose:
             console.print_exception()
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @models_app.command("list")
@@ -123,7 +123,7 @@ def models_list(
     if model not in ("spam_detector", "phishing_detector"):
         console.print(f"[red]Error:[/red] Invalid model name '{model}'")
         console.print("Valid models: spam_detector, phishing_detector")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     try:
         use_case = container.get_list_models_use_case()
@@ -157,7 +157,7 @@ def models_list(
 
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @models_app.command("info")
@@ -176,7 +176,7 @@ def models_info(
 
     if model not in ("spam_detector", "phishing_detector"):
         console.print(f"[red]Error:[/red] Invalid model name '{model}'")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     try:
         use_case = container.get_list_models_use_case()
@@ -197,7 +197,7 @@ def models_info(
 
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 # === Helper functions ===
@@ -210,13 +210,13 @@ def _get_email_text(text_arg: str | None, file_path: Path | None) -> str:
     if file_path:
         if not file_path.exists():
             console.print(f"[red]Error:[/red] File not found: {file_path}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
 
         try:
             return file_path.read_text(encoding="utf-8")
         except Exception as e:
             console.print(f"[red]Error reading file:[/red] {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
 
     if text_arg:
         return text_arg
