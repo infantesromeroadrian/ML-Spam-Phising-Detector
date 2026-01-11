@@ -13,11 +13,16 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Create assets directory first
+RUN mkdir -p /usr/share/nginx/html/assets
+
 # Copy static files
 COPY index.html /usr/share/nginx/html/
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
-COPY assets/ /usr/share/nginx/html/assets/
+
+# Copy assets directory (if it has content, otherwise the mkdir above ensures it exists)
+COPY assets/ /usr/share/nginx/html/assets/ 
 
 # Create cache and logs directories with proper permissions
 RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
