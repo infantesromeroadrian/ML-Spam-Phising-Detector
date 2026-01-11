@@ -2,10 +2,9 @@
 
 from pathlib import Path
 
-import pytest
-
 from src.spam_detector.domain.entities import Email, SinglePrediction
 from src.spam_detector.infrastructure.adapters import (
+import pytest
     JoblibModelLoader,
     SklearnPredictor,
 )

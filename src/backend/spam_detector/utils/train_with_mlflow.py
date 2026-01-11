@@ -60,7 +60,7 @@ def train_and_log(model_type: str, data_path: str):
         # mlflow.sklearn.log_model(model, "model")
         # mlflow.sklearn.log_model(vectorizer, "vectorizer")
 
-        print(f"✅ Run logged to MLflow")
+        print("✅ Run logged to MLflow")
         print(f"   Run ID: {mlflow.active_run().info.run_id}")
         print(f"   Accuracy: {accuracy:.3f}")
 

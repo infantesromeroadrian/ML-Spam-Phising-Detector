@@ -1,13 +1,11 @@
 """Integration tests for CLI."""
 
-import json
 from pathlib import Path
-
-import pytest
-from typer.testing import CliRunner
+import json
 
 from src.spam_detector.infrastructure.cli import app
-
+from typer.testing import CliRunner
+import pytest
 runner = CliRunner()
 
 

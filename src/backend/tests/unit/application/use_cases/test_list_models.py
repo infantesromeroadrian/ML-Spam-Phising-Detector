@@ -2,12 +2,9 @@
 
 from unittest.mock import Mock
 
-import pytest
-
 from src.spam_detector.application.use_cases import ListModelsUseCase
 from src.spam_detector.domain.entities import ModelMetadata
-
-
+import pytest
 @pytest.fixture
 def mock_model_loader():
     """Mock model loader."""

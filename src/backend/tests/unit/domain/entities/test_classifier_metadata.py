@@ -1,10 +1,7 @@
 """Unit tests for ModelMetadata entity."""
 
-import pytest
-
 from src.spam_detector.domain.entities import ModelMetadata
-
-
+import pytest
 class TestModelMetadataCreation:
     """Test ModelMetadata creation."""
 

@@ -2,12 +2,9 @@
 
 from pathlib import Path
 
-import pytest
-
 from src.spam_detector.domain.entities import ModelMetadata
 from src.spam_detector.infrastructure.adapters import JoblibModelLoader
-
-
+import pytest
 @pytest.fixture
 def models_dir() -> Path:
     """Path to actual models directory."""

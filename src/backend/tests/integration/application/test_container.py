@@ -2,10 +2,9 @@
 
 from pathlib import Path
 
-import pytest
-
 from src.spam_detector.application import Container
 from src.spam_detector.application.use_cases import (
+import pytest
     ClassifyEmailUseCase,
     ListModelsUseCase,
 )

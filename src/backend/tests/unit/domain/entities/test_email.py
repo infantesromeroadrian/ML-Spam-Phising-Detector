@@ -1,11 +1,9 @@
 """Unit tests for Email entity."""
 
-import pytest
 from datetime import datetime
 
 from src.spam_detector.domain.entities import Email
-
-
+import pytest
 class TestEmailCreation:
     """Test Email entity creation."""
 

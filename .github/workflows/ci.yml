@@ -163,7 +163,7 @@ jobs:
           curl -f http://localhost:8000/health
           # Test docs endpoint  
           curl -f http://localhost:8000/docs
-          # Test classification (without jq since it's not installed)
+          # Test classification endpoint
           curl -X POST http://localhost:8000/api/v1/classify \
             -H "Content-Type: application/json" \
             -d '{"text": "Test email for classification", "model": "spam_detector"}'

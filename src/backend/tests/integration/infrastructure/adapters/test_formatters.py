@@ -2,9 +2,8 @@
 
 import json
 
-import pytest
-
 from src.spam_detector.domain.entities import (
+import pytest
     ClassificationResult,
     Email,
     SinglePrediction,

@@ -2,10 +2,9 @@
 
 from unittest.mock import Mock
 
-import pytest
-
 from src.spam_detector.application.use_cases import ClassifyEmailUseCase
 from src.spam_detector.domain.entities import (
+import pytest
     ClassificationResult,
     Email,
     SinglePrediction,
