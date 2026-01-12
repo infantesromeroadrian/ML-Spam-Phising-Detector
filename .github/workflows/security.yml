@@ -24,7 +24,7 @@ jobs:
       matrix:
         language: [ 'python', 'javascript' ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
@@ -40,7 +40,7 @@ jobs:
     if: github.event_name == 'pull_request'
     continue-on-error: true  # Don't fail if dependency graph is not enabled
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check if dependency graph is enabled
         id: check-graph
         run: |
@@ -60,7 +60,7 @@ jobs:
       matrix:
         service: [backend, frontend]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build Docker image
         run: docker build -t spam-detector-${{ matrix.service }}:scan ./src/${{ matrix.service }}
       - uses: aquasecurity/trivy-action@master
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
