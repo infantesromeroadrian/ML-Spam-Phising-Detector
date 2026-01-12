@@ -89,7 +89,7 @@ jobs:
             --junit-xml=test-results-unit.xml
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.12'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./src/backend/coverage.xml
